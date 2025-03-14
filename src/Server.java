@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Server {
+
     public static void main(String[] args) {
         try {
             // Cria um ServerSocket na porta 12345
@@ -28,13 +29,19 @@ public class Server {
             // Recebe um objeto do cliente (neste caso, uma String)
            User mensagemRecebida = (User) entrada.readObject();
 
-            System.out.println("Email recebido: " + mensagemRecebida.getNome());
+            System.out.println("Nome recebido: " + mensagemRecebida.getName());
             System.out.println("Senha recebida: " + mensagemRecebida.getPassword());
 
-            
-            CreateDirectories(mensagemRecebida.getNome());
-      
+            User user = new User();
 
+            if(user.userValidation(mensagemRecebida.getName(), mensagemRecebida.getPassword())){
+                CreateDirectories(mensagemRecebida.getName());
+            }
+            else{
+                user.userList.add(mensagemRecebida);
+                saida.writeObject("Usuário não encontrado. Usuário adicionado.");
+            }
+            
             // Fecha os recursos
             entrada.close();
             saida.close();
@@ -50,7 +57,7 @@ public class Server {
         String basePath = "storage";
         String[] typeFile = {"PDF", "JPG", "TXT"}; 
 
-
+        //Esse for vai rodar a quantidade de strings que estiverem no array typefile
         for (String type : typeFile) {
             Path caminho = Paths.get(basePath, name, type);
             try {

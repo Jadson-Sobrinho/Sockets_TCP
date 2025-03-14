@@ -1,7 +1,7 @@
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Scanner;
+
 
 public class Client {
     public static void main(String[] args) {
@@ -15,23 +15,11 @@ public class Client {
             // Cria ObjectInputStream para receber objetos do servidor
             ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
 
-            // Cria o objeto scanner será utilizado para leitura do teclado
-            Scanner scanner = new Scanner(System.in);
+            User user = new User();
 
+            user = user.userInfo();
 
-            System.out.print("Digite seu nome: ");
- 
-            String nome = scanner.nextLine();
-            System.out.print("Digite sua senha: ");
-   
-            String password = scanner.nextLine();
-    
-            scanner.close();
-
-            User user = new User(nome, password);
-
-            // Envia a mensagem como objeto String
-            saida.writeObject(user);
+            saida.writeObject(user);      
 
             // Esse (String) é porque ele está convertendo o que vem do readObject para o formato String
             String resposta = (String) entrada.readObject();
