@@ -21,7 +21,7 @@ public class User implements Serializable {
         }
     }
 
-        // Getters para acessar os valores após desserialização
+    // Getters para acessar os valores após desserialização
     public String getName() {
         return name;
     }

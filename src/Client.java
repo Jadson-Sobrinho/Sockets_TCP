@@ -19,12 +19,15 @@ public class Client {
 
             user = user.userInfo();
 
-            saida.writeObject(user);      
+            saida.writeObject(user);
+
 
             // Esse (String) é porque ele está convertendo o que vem do readObject para o formato String
             String resposta = (String) entrada.readObject();
             System.out.println("Resposta do servidor: " + resposta);
 
+
+            //TODO: Instanciar um objeto do tipo Manager
 
             // Fecha os recursos
             entrada.close();
