@@ -7,7 +7,7 @@ public class Client {
     public static void main(String[] args) {
         try {
             // Conecta ao servidor no localhost na porta 12345
-            Socket socket = new Socket("10.3.124.76", 12345);
+            Socket socket = new Socket("127.0.0.1", 12345);
             System.out.println("Conectado ao servidor!");
 
             // Cria ObjectOutputStream para enviar objetos ao servidor
@@ -17,20 +17,26 @@ public class Client {
 
             // Cria o objeto scanner será utilizado para leitura do teclado
             Scanner scanner = new Scanner(System.in);
-            // Solicita ao usuário que digite uma mensagem
-            System.out.print("Digite uma mensagem para o servidor: ");
-            // Le a mensagem que é digitada no teclado
-            String mensagem = scanner.nextLine();
-            // Fecha o leitor de teclado para ele nao ficar lendo sempre, né?
+
+
+            System.out.print("Digite seu nome: ");
+ 
+            String nome = scanner.nextLine();
+            System.out.print("Digite sua senha: ");
+   
+            String password = scanner.nextLine();
+    
             scanner.close();
 
-            // Envia a mensagem como objeto String
-            saida.writeObject(mensagem);
+            User user = new User(nome, password);
 
-            // Recebe a resposta do servidor (como String)
+            // Envia a mensagem como objeto String
+            saida.writeObject(user);
+
             // Esse (String) é porque ele está convertendo o que vem do readObject para o formato String
             String resposta = (String) entrada.readObject();
             System.out.println("Resposta do servidor: " + resposta);
+
 
             // Fecha os recursos
             entrada.close();
