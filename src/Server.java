@@ -1,7 +1,11 @@
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Server {
     public static void main(String[] args) {
@@ -39,4 +43,24 @@ public class Server {
             e.printStackTrace();
         }
     }
+
+    public void CreateDirectories(String[] args) {
+        String basePath = "storage";
+        String[] users = {"user1", "user2", "user3"}; 
+        String[] typeFile = {"PDF", "JPG", "TXT"}; 
+
+        for (String user : users) {
+            for (String tipo : typeFile) {
+                Path path = Paths.get(basePath, user, tipo);
+                try {
+                    Files.createDirectories(path);
+                    System.out.println("Diretório criado: " + path);
+                } catch (IOException e) {
+                    System.err.println("Erro ao criar diretório: " + path);
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }
