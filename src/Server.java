@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class Server {
     public static void main(String[] args) {
@@ -25,14 +26,14 @@ public class Server {
             ObjectOutputStream saida = new ObjectOutputStream(socket.getOutputStream());
 
             // Recebe um objeto do cliente (neste caso, uma String)
-            String mensagemRecebida = (String) entrada.readObject();
-            // Exibe a mensagem recebida do cliente na tela
-            System.out.println("Mensagem recebida do cliente: " + mensagemRecebida);
+           User mensagemRecebida = (User) entrada.readObject();
 
-            // Monta a resposta que será enviado para o servidor
-            String resposta = "Servidor recebeu: " + mensagemRecebida;
-            // Escreve os dados na saída
-            saida.writeObject(resposta);
+            System.out.println("Email recebido: " + mensagemRecebida.getNome());
+            System.out.println("Senha recebida: " + mensagemRecebida.getPassword());
+
+            
+            CreateDirectories(mensagemRecebida.getNome());
+      
 
             // Fecha os recursos
             entrada.close();
@@ -44,23 +45,24 @@ public class Server {
         }
     }
 
-    public void CreateDirectories(String[] args) {
+    public static void CreateDirectories(String name) {
+        Scanner scanner = new Scanner(System.in);
         String basePath = "storage";
-        String[] users = {"user1", "user2", "user3"}; 
         String[] typeFile = {"PDF", "JPG", "TXT"}; 
 
-        for (String user : users) {
-            for (String tipo : typeFile) {
-                Path path = Paths.get(basePath, user, tipo);
-                try {
-                    Files.createDirectories(path);
-                    System.out.println("Diretório criado: " + path);
-                } catch (IOException e) {
-                    System.err.println("Erro ao criar diretório: " + path);
-                    e.printStackTrace();
-                }
+
+        for (String type : typeFile) {
+            Path caminho = Paths.get(basePath, name, type);
+            try {
+                Files.createDirectories(caminho);
+                System.out.println("Diretório criado: " + caminho);
+            } catch (IOException e) {
+                System.err.println("Erro ao criar diretório: " + caminho);
+                e.printStackTrace();
             }
         }
+
+
     }
 
 }
