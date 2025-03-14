@@ -40,6 +40,7 @@ public class Server {
             else{
                 user.userList.add(mensagemRecebida);
                 saida.writeObject("Usuário não encontrado. Usuário adicionado.");
+                CreateDirectories(mensagemRecebida.getName());
             }
             
             // Fecha os recursos
