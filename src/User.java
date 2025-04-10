@@ -1,13 +1,13 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
     String name;
     String password;
-    List<User> userList;
+    public static List<User> userList = new ArrayList<>();
     
 
     public User(String name, String password) {
@@ -36,21 +36,6 @@ public class User implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public User userInfo() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Digite seu nome: ");
-        String nome = scanner.nextLine();
-
-        System.out.print("Digite sua senha: ");
-        String password = scanner.nextLine();
-
-    
-        return new User(nome, password);
-
-    }
-
 
     public boolean userValidation(String name, String password) {
         
