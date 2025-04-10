@@ -80,6 +80,36 @@ public class Client {
                         // Encerra a aplicação
                         parentFrame.dispose();
                         break;
+                    
+                    case 2:
+                        String basePath = "storage";
+                        String nomePessoa = nome;
+
+                        String[] tipos = { "PDF", "TXT", "JPG" };
+
+                        for (String tipo : tipos) {
+                            File pasta = new File(basePath + "/" + nomePessoa + "/" + tipo);
+
+                            System.out.println("Arquivos de " + tipo + " para " + nomePessoa + ":");
+
+                            if (pasta.exists() && pasta.isDirectory()) {
+                                File[] arquivos = pasta.listFiles();
+                                if (arquivos != null && arquivos.length > 0) {
+                                    for (File lista : arquivos) {
+                                        if (lista.isFile()) {
+                                            System.out.println(" - " + lista.getName());
+                                        }
+                                    }
+                                } else {
+                                    System.out.println(" (nenhum arquivo encontrado)");
+                                }
+                            } else {
+                                System.out.println(" (pasta não existe)");
+                            }
+
+                            System.out.println();
+                        }
+                        break;
 
                     case 4:
                         saida.writeObject("EXIT");
