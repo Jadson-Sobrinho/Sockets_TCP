@@ -7,10 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
-
 public class Server {
 
+
     public static void main(String[] args) {
+
+
         try {
             // Cria um ServerSocket na porta 12345
             // Voce pode escolher outra, mas use maior que 1024
@@ -27,7 +29,7 @@ public class Server {
             ObjectOutputStream saida = new ObjectOutputStream(socket.getOutputStream());
 
             // Recebe um objeto do cliente (neste caso, uma String)
-           User mensagemRecebida = (User) entrada.readObject();
+            User mensagemRecebida = (User) entrada.readObject();
 
             System.out.println("Nome recebido: " + mensagemRecebida.getName());
             System.out.println("Senha recebida: " + mensagemRecebida.getPassword());
@@ -42,7 +44,7 @@ public class Server {
                 saida.writeObject("Usuário não encontrado. Usuário adicionado.");
                 CreateDirectories(mensagemRecebida.getName());
             }
-            
+
             // Fecha os recursos
             entrada.close();
             saida.close();
