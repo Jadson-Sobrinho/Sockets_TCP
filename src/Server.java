@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
+
 public class Server {
 
 
@@ -31,6 +32,8 @@ public class Server {
             // Recebe um objeto do cliente (neste caso, uma String)
             User mensagemRecebida = (User) entrada.readObject();
 
+            
+
             System.out.println("Nome recebido: " + mensagemRecebida.getName());
             System.out.println("Senha recebida: " + mensagemRecebida.getPassword());
 
@@ -45,11 +48,51 @@ public class Server {
                 CreateDirectories(mensagemRecebida.getName());
             }
 
-            // Fecha os recursos
-            entrada.close();
-            saida.close();
-            socket.close();
-            serverSocket.close();
+            boolean ativo = true;
+            while (ativo) {
+                Object cmdObj = entrada.readObject();
+                if (!(cmdObj instanceof String)) break;
+                String comando = (String) cmdObj;
+
+                switch (comando) {
+                    case "UPLOAD":
+                        String nome = (String) entrada.readObject(); // nome do arquivo
+                        int tamanho = entrada.readInt();             // tamanho em bytes
+                        byte[] conteudoUpload = new byte[tamanho];
+                        entrada.readFully(conteudoUpload);                 // lê o conteúdo
+
+                        // Cria o caminho: storage/NOME_USUARIO/tipo/nomeArquivo
+                        Path caminho = Paths.get("storage", mensagemRecebida.getName(), getTipoArquivo(nome));
+                        Files.createDirectories(caminho); // cria as pastas se não existirem
+
+                        Path caminhoCompleto = caminho.resolve(nome);
+                        Files.write(caminhoCompleto, conteudoUpload);      // salva o arquivo
+
+                        saida.writeObject("UPLOAD_OK"); // responde que deu tudo certo
+                        System.out.println("Arquivo salvo com sucesso em: " + caminhoCompleto.toString());
+                        break;
+
+                    case "DOWNLOAD":
+                        // 1) lê o nome do arquivo pedido
+                        String nomeArquivo = (String) entrada.readObject();
+                        Path caminhoArquivo = Paths.get("storage", mensagemRecebida.getName(), getTipoArquivo(nomeArquivo), nomeArquivo);
+                        if (Files.exists(caminhoArquivo)) {
+                            byte[] conteudo = Files.readAllBytes(caminhoArquivo);
+                            saida.writeObject("OK");
+                            saida.writeInt(conteudo.length);
+                            saida.write(conteudo);
+                            saida.flush();
+                            System.out.println("Enviado: " + nomeArquivo);
+                        } else {
+                            saida.writeObject("ERRO: Arquivo não encontrado.");
+                        }
+                        break;
+
+                    case "EXIT":
+                        ativo = false;
+                        break;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,5 +117,12 @@ public class Server {
 
 
     }
+
+    public static String getTipoArquivo(String nomeArquivo) {
+    if (nomeArquivo.endsWith(".pdf")) return "PDF";
+    if (nomeArquivo.endsWith(".txt")) return "TXT";
+    if (nomeArquivo.endsWith(".jpg") || nomeArquivo.endsWith(".jpeg")) return "JPG";
+    return "";
+}
 
 }
