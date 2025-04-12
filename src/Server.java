@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Server {
 
-
+    
     public static void main(String[] args) {
 
 
@@ -24,38 +24,46 @@ public class Server {
             Socket socket = serverSocket.accept();
             System.out.println("Cliente conectado!");
 
-            // Cria ObjectInputStream para receber objetos do cliente
-            ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
             // Cria ObjectOutputStream para enviar objetos para o cliente
             ObjectOutputStream saida = new ObjectOutputStream(socket.getOutputStream());
+            // Cria ObjectInputStream para receber objetos do cliente
+            ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
 
             // Recebe um objeto do cliente (neste caso, uma String)
-            User mensagemRecebida = (User) entrada.readObject();
+            User mensagemRecebida = null;
 
-            
-
-            System.out.println("Nome recebido: " + mensagemRecebida.getName());
-            System.out.println("Senha recebida: " + mensagemRecebida.getPassword());
 
             User user = new User();
-
-            if(user.userValidation(mensagemRecebida.getName(), mensagemRecebida.getPassword())){
-                CreateDirectories(mensagemRecebida.getName());
-            }
-            else{
-                user.userList.add(mensagemRecebida);
-                saida.writeObject("Usuário não encontrado. Usuário adicionado.");
-                CreateDirectories(mensagemRecebida.getName());
-            }
-
             boolean ativo = true;
+
             while (ativo) {
+
                 Object cmdObj = entrada.readObject();
                 if (!(cmdObj instanceof String)) break;
                 String comando = (String) cmdObj;
 
                 switch (comando) {
-                    case "UPLOAD":
+                    case "LOGIN" -> {
+                        mensagemRecebida = (User) entrada.readObject();
+
+                        System.out.println("Nome recebido: " + mensagemRecebida.getName());
+                        System.out.println("Senha recebida: " + mensagemRecebida.getPassword());
+
+                        if(user.userValidation(mensagemRecebida.getName(), mensagemRecebida.getPassword())){
+                            saida.writeObject("OK");
+                        }
+                        else{
+                            saida.writeObject("NOTOK");
+                        }
+                    }
+                    case "REGISTER" -> {
+                        mensagemRecebida = (User) entrada.readObject();
+                        CreateDirectories(mensagemRecebida.getName());
+
+                        User.userList.add(mensagemRecebida);
+                        saida.writeObject("OK");
+                    }
+                    case "UPLOAD" -> {
                         String nome = (String) entrada.readObject(); // nome do arquivo
                         int tamanho = entrada.readInt();             // tamanho em bytes
                         byte[] conteudoUpload = new byte[tamanho];
@@ -70,9 +78,9 @@ public class Server {
 
                         saida.writeObject("UPLOAD_OK"); // responde que deu tudo certo
                         System.out.println("Arquivo salvo com sucesso em: " + caminhoCompleto.toString());
-                        break;
+                    }
 
-                    case "DOWNLOAD":
+                    case "DOWNLOAD" -> {
                         // 1) lê o nome do arquivo pedido
                         String nomeArquivo = (String) entrada.readObject();
                         Path caminhoArquivo = Paths.get("storage", mensagemRecebida.getName(), getTipoArquivo(nomeArquivo), nomeArquivo);
@@ -86,11 +94,13 @@ public class Server {
                         } else {
                             saida.writeObject("ERRO: Arquivo não encontrado.");
                         }
-                        break;
+                    }
 
-                    case "EXIT":
+                    case "EXIT" -> {
                         ativo = false;
-                        break;
+                        socket.close();
+                        System.out.println("Conexão encerrada.");
+                    }
                 }
             }
         } catch (Exception e) {
