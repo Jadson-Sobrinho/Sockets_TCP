@@ -64,20 +64,26 @@ public class Server {
                         saida.writeObject("OK");
                     }
                     case "UPLOAD" -> {
-                        String nome = (String) entrada.readObject(); // nome do arquivo
-                        int tamanho = entrada.readInt();             // tamanho em bytes
-                        byte[] conteudoUpload = new byte[tamanho];
-                        entrada.readFully(conteudoUpload);                 // lê o conteúdo
+                        try {
+                            String nome = (String) entrada.readObject(); // nome do arquivo
+                            int tamanho = entrada.readInt();             // tamanho em bytes
+                            byte[] conteudoUpload = new byte[tamanho];
+                            entrada.readFully(conteudoUpload);                 // lê o conteúdo
 
-                        // Cria o caminho: storage/NOME_USUARIO/tipo/nomeArquivo
-                        Path caminho = Paths.get("storage", mensagemRecebida.getName(), getTipoArquivo(nome));
-                        Files.createDirectories(caminho); // cria as pastas se não existirem
+                            // Cria o caminho: storage/NOME_USUARIO/tipo/nomeArquivo
+                            Path caminho = Paths.get("storage", mensagemRecebida.getName(), getTipoArquivo(nome));
+                            Files.createDirectories(caminho); // cria as pastas se não existirem
 
-                        Path caminhoCompleto = caminho.resolve(nome);
-                        Files.write(caminhoCompleto, conteudoUpload);      // salva o arquivo
+                            Path caminhoCompleto = caminho.resolve(nome);
+                            Files.write(caminhoCompleto, conteudoUpload);      // salva o arquivo
 
-                        saida.writeObject("UPLOAD_OK"); // responde que deu tudo certo
-                        System.out.println("Arquivo salvo com sucesso em: " + caminhoCompleto.toString());
+                            saida.writeObject("UPLOAD_OK"); // responde que deu tudo certo
+                            System.out.println("Arquivo salvo com sucesso em: " + caminhoCompleto.toString());
+                            
+                        } catch (Exception e) {
+                            System.err.println("Formato de arquivo errado");
+                        }
+
                     }
 
                     case "DOWNLOAD" -> {

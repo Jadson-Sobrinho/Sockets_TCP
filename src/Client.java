@@ -15,11 +15,6 @@ public class Client {
             ObjectOutputStream saida = new ObjectOutputStream(socket.getOutputStream());
             // Cria ObjectInputStream para receber objetos do servidor
             ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
-
-
-            // Esse (String) é porque ele está convertendo o que vem do readObject para o formato String
-            //String resposta = (String) entrada.readObject();
-            //System.out.println("Resposta do servidor: " + resposta);
             
             Scanner scanner = new Scanner(System.in);
             System.out.println("1. Login");
@@ -78,7 +73,6 @@ public class Client {
                     break;
                 case 3:
                     saida.writeObject("EXIT");
-                    socket.close();
                     System.out.println("Conexão encerrada.");
                     return;
                 default:
